@@ -1,0 +1,7 @@
+## Interface: 40300
+## Title: OmnislashMarkers
+## Notes: Mark for Zon'ozz Heroic, Group 1 marked star, circle, diamond
+## Author: Taracque
+## Version: 0.1
+
+OmnislashMarkers.lua

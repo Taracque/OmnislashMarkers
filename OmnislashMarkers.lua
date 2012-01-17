@@ -61,8 +61,14 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		SetRaidTargetIcon(destGUID, 0)
 		SendChatMessage( buffName .. " faded from " .. playerWithBuff, "RAID" )
 		listOfPlayers[destGUID] = 0
-	end	
-
+	end
+	if (sourceName == "Void of the Unmaking") then
+		icon = GetRaidTargetIndex(sourceGUID)
+		if (icon ~= 8) then
+			SetRaidTargetIcon(destGUID, 8)
+			SendChatMessage( sourceName .. " {rt8}", "RAID" )
+		end
+	end
 end
 
 frame:SetScript("OnEvent", function(self, event, ...)

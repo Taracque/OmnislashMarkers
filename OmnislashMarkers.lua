@@ -2,40 +2,40 @@ local frame, events = CreateFrame("Frame"), {};
 local listOfPlayers = {}
 local hour_of_twilight_count = 0
 local hot_standers = {
-	1 = {
-		1 = "Dögrovás",
-		2 = "Airween",
-		3 = ""
+	[1] = {
+		[1] = "Dögrovás",
+		[2] = "Airween",
+		[3] = ""
 	},
-	2 = {
-		1 = "Zedicus",
-		2 = "Holywing",
-		3 = "Divine protection!"
+	[2] = {
+		[1] = "Zedicus",
+		[2] = "Holywing",
+		[3] = "Divine protection!"
 	},
-	3 = {
-		1 = "Meitra",
-		2 = "Nashmabb",
-		3 = "Pain Supression, Hand of Sacrifice"
+	[3] = {
+		[1] = "Meitra",
+		[2] = "Nashmabb",
+		[3] = "Pain Supression, Hand of Sacrifice"
 	},
-	4 = {
-		1 = "Dögrovás",
-		2 = "Airween",
-		3 = ""
+	[4] = {
+		[1] = "Dögrovás",
+		[2] = "Airween",
+		[3] = ""
 	},
-	5 = {
-		1 = "Zedicus",
-		2 = "Classrun",
-		3 = "Hand of Sacrifice"
+	[5] = {
+		[1] = "Zedicus",
+		[2] = "Classrun",
+		[3] = "Hand of Sacrifice"
 	},
-	6 = {
-		1 = "Meitra",
-		2 = "Holywing",
-		3 = "Divine Shield"
+	[6] = {
+		[1] = "Meitra",
+		[2] = "Holywing",
+		[3] = "Divine Shield"
 	},
-	7 = {
-		1 = "Dögrovás",
-		2 = "Airween",
-		3 = ""
+	[7] = {
+		[1] = "Dögrovás",
+		[2] = "Airween",
+		[3] = ""
 	}
 }
 
@@ -118,7 +118,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		for i=1, GetNumRaidMembers() do
 			listOfPlayers[ UnitName("raid"..i) ] = UnitGUID("raid"..i)
 		end
-	end if
+	end
 	
 	if buffName == "Hour of Twilight" then -- skull and cross
 		hour_of_twilight_count = hour_of_twilight_count + 1
@@ -128,7 +128,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		if (hot_standers[hour_of_twilight_count][3] ~= "") then
 			SendChatMessage( hot_standers[hour_of_twilight_count][3] , "RAID_WARNING" )
 		end
-	end if
+	end
 	if buffName == "Fading Light" and event == "SPELL_AURA_APPLIED" then
 		icon = icon + 1
 		SetRaidTargetIcon(destGUID, icon)

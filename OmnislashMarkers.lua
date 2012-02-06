@@ -121,12 +121,19 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 	end
 	
 	if buffName == "Hour of Twilight" then -- skull and cross
-		hour_of_twilight_count = hour_of_twilight_count + 1
-		for i=1, 2 do
-			SetRaidTargetIcon( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 6 + i)
+		if event == "SPELL_CAST_START" then
+			hour_of_twilight_count = hour_of_twilight_count + 1
+			for i=1, 2 do
+				SetRaidTargetIcon( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 6 + i)
+			end
+			if (hot_standers[hour_of_twilight_count][3] ~= "") then
+				SendChatMessage( hot_standers[hour_of_twilight_count][3] , "RAID_WARNING" )
+			end
 		end
-		if (hot_standers[hour_of_twilight_count][3] ~= "") then
-			SendChatMessage( hot_standers[hour_of_twilight_count][3] , "RAID_WARNING" )
+		if event == "SPELL_CAST_SUCCESS" then
+			for i=1, 2 do
+				SetRaidTargetIcon( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 0)
+			end
 		end
 	end
 	if buffName == "Fading Light" and event == "SPELL_AURA_APPLIED" then

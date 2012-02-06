@@ -4,40 +4,41 @@ local hour_of_twilight_count = 0
 local hot_standers = {
 	[1] = {
 		[1] = "Dögrovás",
-		[2] = "Airween",
+		[2] = "Meitra",
 		[3] = ""
 	},
 	[2] = {
-		[1] = "Zedicus",
-		[2] = "Holywing",
-		[3] = "Divine protection!"
+		[1] = "Rundigo",
+		[2] = "Sotaludrof",
+		[3] = "Power Word: Barrier"
 	},
 	[3] = {
-		[1] = "Meitra",
-		[2] = "Nashmabb",
-		[3] = "Pain Supression, Hand of Sacrifice"
+		[1] = "Zedicus",
+		[2] = "Holywing",
+		[3] = "Divine protection"
 	},
 	[4] = {
 		[1] = "Dögrovás",
-		[2] = "Airween",
+		[2] = "Meitra",
 		[3] = ""
 	},
 	[5] = {
-		[1] = "Zedicus",
-		[2] = "Classrun",
-		[3] = "Hand of Sacrifice"
+		[1] = "Classrun",
+		[2] = "Malliore",
+		[3] = "Pain Supression, Hand of Sacrifice"
 	},
 	[6] = {
-		[1] = "Meitra",
+		[1] = "Zedicus",
 		[2] = "Holywing",
-		[3] = "Divine Shield"
+		[3] = "Divine protection"
 	},
 	[7] = {
 		[1] = "Dögrovás",
-		[2] = "Airween",
+		[2] = "Meitra",
 		[3] = ""
 	}
 }
+local icon = 0
 
 function events:PLAYER_ENTERING_WORLD(...)
 	print("OmnislashMarkers Loaded - requires raid assist!")
@@ -54,7 +55,6 @@ end
 function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
  	local timestamp, combatEvent, hideCaster, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags = ...; -- Those arguments appear for all combat event variants.
 	local i
-	local icon
 
 	-- Zon'ozz HC
 	playerWithBuff = select(7, ...)
@@ -116,35 +116,40 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		-- load player's guid
 		listOfPlayers = {}
 		for i=1, GetNumRaidMembers() do
-			listOfPlayers[ UnitName("raid"..i) ] = UnitGUID("raid"..i)
+			listOfPlayers[ UnitName("raid"..i) ] = "raid"..i
+			print("[OM] : " .. UnitName("raid"..i) .. "( raid"..i .. " ) added" )
 		end
+
+		SendChatMessage( "Omnislash Markers - Ultraxion HC module loaded", "RAID" )
 	end
 	
 	if buffName == "Hour of Twilight" then -- skull and cross
 		if event == "SPELL_CAST_START" then
 			hour_of_twilight_count = hour_of_twilight_count + 1
 			for i=1, 2 do
-				SetRaidTargetIcon( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 6 + i)
+				if (hot_standers[hour_of_twilight_count][i]) and (listOfPlayers[ hot_standers[hour_of_twilight_count][i] ]) then
+					SetRaidTarget( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 6 + i)
+				end
 			end
 			if (hot_standers[hour_of_twilight_count][3] ~= "") then
-				SendChatMessage( hot_standers[hour_of_twilight_count][3] , "RAID_WARNING" )
+				SendChatMessage( hot_standers[hour_of_twilight_count][1] .. ", " .. hot_standers[hour_of_twilight_count][2] .. " " .. hot_standers[hour_of_twilight_count][3] , "RAID_WARNING" )
 			end
 		end
 		if event == "SPELL_CAST_SUCCESS" then
 			for i=1, 2 do
-				SetRaidTargetIcon( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 0)
+				SetRaidTarget( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 0)
 			end
 		end
 	end
 	if buffName == "Fading Light" and event == "SPELL_AURA_APPLIED" then
 		icon = icon + 1
-		SetRaidTargetIcon(destGUID, icon)
+		SetRaidTarget(destGUID, icon)
 		if (icon >= 3) then
 			icon = 0
 		end
 	end
 	if buffName == "Fading Light" and event == "SPELL_AURA_REMOVED" then
-		SetRaidTargetIcon(destGUID, 0)
+		SetRaidTarget(destGUID, 0)
 	end
 end
 

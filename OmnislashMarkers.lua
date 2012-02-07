@@ -8,9 +8,9 @@ local hot_standers = {
 		[3] = ""
 	},
 	[2] = {
-		[1] = "Rundigo",
-		[2] = "Sotaludrof",
-		[3] = "Power Word: Barrier"
+		[1] = "Classrun",
+		[2] = "Airween",
+		[3] = "Pain Supression, Hand of Sacrifice"
 	},
 	[3] = {
 		[1] = "Zedicus",
@@ -24,8 +24,8 @@ local hot_standers = {
 	},
 	[5] = {
 		[1] = "Classrun",
-		[2] = "Malliore",
-		[3] = "Pain Supression, Hand of Sacrifice"
+		[2] = "Airween",
+		[3] = ""
 	},
 	[6] = {
 		[1] = "Zedicus",

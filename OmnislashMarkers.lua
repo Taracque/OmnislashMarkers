@@ -117,7 +117,6 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		listOfPlayers = {}
 		for i=1, GetNumRaidMembers() do
 			listOfPlayers[ UnitName("raid"..i) ] = "raid"..i
-			print("[OM] : " .. UnitName("raid"..i) .. "( raid"..i .. " ) added" )
 		end
 
 		SendChatMessage( "Omnislash Markers - Ultraxion HC module loaded", "RAID" )

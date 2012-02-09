@@ -200,6 +200,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		if (do_mark ~= 0) then
 			if playerWithBuff == globule_priority[do_mark]["marking"] then
 				SetRaidTarget(destGUID, 7) -- Skull
+				SendChatMessage( globule_priority[do_mark]["warning"], "RAID_WARNING" )
 				do_mark = 0
 			end
 		end

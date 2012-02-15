@@ -4,37 +4,37 @@ local hour_of_twilight_count = 0
 local hot_standers = {
 	[1] = {
 		[1] = "Dögrovás",
-		[2] = "Meitra",
+		[2] = "Adorján",
 		[3] = ""
 	},
 	[2] = {
-		[1] = "Classrun",
-		[2] = "Airween",
-		[3] = "Pain Supression, Hand of Sacrifice"
+		[1] = "Mlnrmt",
+		[2] = "Nashmabb",
+		[3] = "Totem, Pain Supression"
 	},
 	[3] = {
-		[1] = "Zedicus",
+		[1] = "Dardius",
 		[2] = "Holywing",
 		[3] = "Divine protection"
 	},
 	[4] = {
 		[1] = "Dögrovás",
-		[2] = "Meitra",
+		[2] = "Adorján",
 		[3] = ""
 	},
 	[5] = {
-		[1] = "Classrun",
-		[2] = "Airween",
-		[3] = ""
+		[1] = "Mlnrmt",
+		[2] = "Nashmabb",
+		[3] = "Totem, Hand of Sacrifice"
 	},
 	[6] = {
-		[1] = "Zedicus",
+		[1] = "Dardius",
 		[2] = "Holywing",
 		[3] = "Divine protection"
 	},
 	[7] = {
 		[1] = "Dögrovás",
-		[2] = "Meitra",
+		[2] = "Adorján",
 		[3] = ""
 	}
 }
@@ -70,17 +70,25 @@ local globule_priority = {
 }
 local icon = 0
 local enabled = false
-local do_mark = ""
+local do_mark = 0
 
 function events:PLAYER_ENTERING_WORLD(...)
 	if ( GetInstanceDifficulty() >= 3) then
-		print("OmnislashMarkers Loaded - requires raid assist!")
 		enabled = true
 	else
 		print("OmnislashMarkers Loaded, but disabled (non Heroic Raid mode detected)")
 		enabled = false
 	end
-	
+end
+
+function events:RAID_INSTANCE_WELCOME(...)
+	if ( GetInstanceDifficulty() >= 3) then
+		print("OmnislashMarkers Loaded - Enabled, requires raid assist!")
+		enabled = true
+	else
+		print("OmnislashMarkers Loaded - Disabled (non Heroic Raid mode detected)")
+		enabled = false
+	end
 end
 
 function events:PLAYER_REGEN_ENABLED(...)
@@ -91,13 +99,30 @@ function events:PLAYER_REGEN_ENABLED(...)
 	listOfPlayers = {}
 end
 
+function events:UNIT_SPELLCAST_SUCCEEDED(event, ...)
+	if enabled then
+		local spellID = select(5, ...)
+		-- Yor'sahj HC
+		if globule_priority[spellID] then
+			SendChatMessage( globule_priority[spellID]["warning"], "RAID_WARNING" )
+			do_mark = spellID
+		end
+		if (do_mark ~= 0) then
+			if (playerWithBuff) and (playerWithBuff == globule_priority[do_mark]["marking"]) then
+				SetRaidTarget(destGUID, 7) -- Skull
+				SendChatMessage( globule_priority[do_mark]["warning"], "RAID_WARNING" )
+				do_mark = 0
+			end
+		end
+	end
+end
+
 function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
  	local timestamp, combatEvent, hideCaster, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags = ...; -- Those arguments appear for all combat event variants.
 	local i
 
 	if enabled then
 		playerWithBuff = select(7, ...)
-		spellID = select(10, ...)
 		buffName = select(11, ...)
 	
 		-- Zon'ozz HC
@@ -192,18 +217,6 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			SetRaidTarget(destGUID, 0)
 		end
 		
-		-- Yor'sahj HC
-		if globule_priority[spellID] then
-			SendChatMessage( globule_priority[spellID]["warning"], "RAID_WARNING" )
-			do_mark = spellID
-		end
-		if (do_mark ~= 0) then
-			if playerWithBuff == globule_priority[do_mark]["marking"] then
-				SetRaidTarget(destGUID, 7) -- Skull
-				SendChatMessage( globule_priority[do_mark]["warning"], "RAID_WARNING" )
-				do_mark = 0
-			end
-		end
 	end
 end
 

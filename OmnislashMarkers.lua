@@ -71,6 +71,8 @@ local globule_priority = {
 local icon = 0
 local enabled = false
 local do_mark = 0
+local waitTable = {}
+local waitFrame = nil
 
 function events:PLAYER_ENTERING_WORLD(...)
 	if ( GetInstanceDifficulty() >= 3) then
@@ -106,6 +108,47 @@ function events:UNIT_SPELLCAST_SUCCEEDED(event, ...)
 		if globule_priority[spellID] then
 			SendChatMessage( globule_priority[spellID]["warning"], "RAID_WARNING" )
 			do_mark = spellID
+		end
+	end
+end
+
+function OM_wait(delay, func, ...)
+	if(type(delay) ~= "number" or type(func) ~= "function") then
+		return false
+	end
+	if not waitFrame then
+		waitFrame = CreateFrame("Frame", nil, UIParent)
+		waitFrame:SetScript("OnUpdate", function (self, elapse)
+			for i = 1, #waitTable do
+				local waitRecord = tremove(waitTable, i)
+				local d = tremove(waitRecord, 1)
+				local f = tremove(waitRecord, 1)
+				local p = tremove(waitRecord, 1)
+				if d > elapse then
+					tinsert(waitTable, i, {d - elapse, f, p})
+					i = i + 1
+				else
+					count = count - 1
+					f(unpack(p))
+				end
+			end
+		end)
+	end
+	tinsert(waitTable, {delay, func, {...}})
+	return true
+end
+
+function OM_ULTRAXION_displayWarning(counter)
+	local i
+
+	if (hot_standers[counter]) then
+		for i=1, 2 do
+			if (hot_standers[counter][i]) and (listOfPlayers[ hot_standers[counter][i] ]) then
+				SetRaidTarget( listOfPlayers[ hot_standers[counter][i] ], 6 + i)
+			end
+		end
+		if (hot_standers[counter][3] ~= "") then
+			SendChatMessage( hot_standers[counter][1] .. ", " .. hot_standers[counter][2] .. " " .. hot_standers[counter][3] , "RAID_WARNING" )
 		end
 	end
 end
@@ -184,14 +227,8 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		if buffName == "Hour of Twilight" then -- skull and cross
 			if event == "SPELL_CAST_START" then
 				hour_of_twilight_count = hour_of_twilight_count + 1
-				for i=1, 2 do
-					if (hot_standers[hour_of_twilight_count][i]) and (listOfPlayers[ hot_standers[hour_of_twilight_count][i] ]) then
-						SetRaidTarget( listOfPlayers[ hot_standers[hour_of_twilight_count][i] ], 6 + i)
-					end
-				end
-				if (hot_standers[hour_of_twilight_count][3] ~= "") then
-					SendChatMessage( hot_standers[hour_of_twilight_count][1] .. ", " .. hot_standers[hour_of_twilight_count][2] .. " " .. hot_standers[hour_of_twilight_count][3] , "RAID_WARNING" )
-				end
+				OM_ULTRAXION_displayWarning( hour_of_twilight_count )
+				OM_wait(40,OM_ULTRAXION_displayWarning,(hour_of_twilight_count+1))
 			end
 			if event == "SPELL_CAST_SUCCESS" then
 				for i=1, 2 do

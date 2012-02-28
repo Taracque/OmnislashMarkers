@@ -3,37 +3,37 @@ local listOfPlayers = {}
 local hour_of_twilight_count = 0
 local hot_standers = {
 	[1] = {
-		[1] = "Dögrovás",
+		[1] = "Zedicus",
 		[2] = "Adorján",
 		[3] = ""
 	},
 	[2] = {
-		[1] = "Mlnrmt",
-		[2] = "Nashmabb",
-		[3] = "Totem, Pain Supression"
+		[1] = "Dardius",
+		[2] = "Meitra",
+		[3] = ""
 	},
 	[3] = {
-		[1] = "Dardius",
+		[1] = "Dögrovás",
 		[2] = "Holywing",
 		[3] = "Divine protection"
 	},
 	[4] = {
-		[1] = "Dögrovás",
+		[1] = "Zedicus",
 		[2] = "Adorján",
 		[3] = ""
 	},
 	[5] = {
-		[1] = "Mlnrmt",
-		[2] = "Nashmabb",
-		[3] = "Totem, Hand of Sacrifice"
+		[1] = "Dardius",
+		[2] = "Meitra",
+		[3] = ""
 	},
 	[6] = {
-		[1] = "Dardius",
+		[1] = "Dögrovás",
 		[2] = "Holywing",
 		[3] = "Divine protection"
 	},
 	[7] = {
-		[1] = "Dögrovás",
+		[1] = "Zedicus",
 		[2] = "Adorján",
 		[3] = ""
 	}
@@ -41,27 +41,27 @@ local hot_standers = {
 local globule_priority = {
 	[105420] = {	-- purple - green - blue - BLACK
 		["marking"] = "Dark Globule",
-		["warning"] = "Fekete! Direkt heal stop, spread, Mana Void"
+		["warning"] = "{rt5} Fekete! {rt5} Direkt heal stop, spread, Mana Void"
 	},
 	[105435] = {	-- GREEN - red - black - blue
 		["marking"] = "Acidic Globule",
-		["warning"] = "Zöld! Össze, AoE, Mana Void"
+		["warning"] = "{rt4} Zöld! {rt4} Össze, AoE, Mana Void"
 	},
 	[105436] = {	-- green - YELLOW - red - black
 		["marking"] = "Glowing Globule",
-		["warning"] = "Sárga! Spread (minimálisan), AoE"
+		["warning"] = "{rt1} Sárga! {rt1} Spread (minimálisan), AoE"
 	},
 	[105437] = {	-- blue - purple - YELLOW - green
 		["marking"] = "Glowing Globule",
-		["warning"] = "Sárga! Direkt heal stop, spread, Mana Void"
+		["warning"] = "{rt1} Sárga! {rt1} Direkt heal stop, spread, Mana Void"
 	},
 	[105439] = {	-- blue - black - YELLOW - purple
 		["marking"] = "Glowing Globule",
-		["warning"] = "Sárga! Direkt heal stop, AoE, Mana Void"
+		["warning"] = "{rt1} Sárga! {rt1} Direkt heal stop, AoE, Mana Void"
 	},
 	[105440] = {	-- purple - red - black - YELLOW
 		["marking"] = "Glowing Globule",
-		["warning"] = "Sárga! Direkt heal stop, Össze, AoE"
+		["warning"] = "{rt1} Sárga! {rt1} Direkt heal stop, Össze, AoE"
 	},
 	[105441] = {	-- ???
 		["marking"] = "",
@@ -106,13 +106,6 @@ function events:UNIT_SPELLCAST_SUCCEEDED(event, ...)
 		if globule_priority[spellID] then
 			SendChatMessage( globule_priority[spellID]["warning"], "RAID_WARNING" )
 			do_mark = spellID
-		end
-		if (do_mark ~= 0) then
-			if (playerWithBuff) and (playerWithBuff == globule_priority[do_mark]["marking"]) then
-				SetRaidTarget(destGUID, 7) -- Skull
-				SendChatMessage( globule_priority[do_mark]["warning"], "RAID_WARNING" )
-				do_mark = 0
-			end
 		end
 	end
 end
@@ -217,6 +210,14 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			SetRaidTarget(destGUID, 0)
 		end
 		
+		-- Yor'sahj HC Globule Marking
+		if (do_mark ~= 0) then
+			if (playerWithBuff) and (playerWithBuff == globule_priority[do_mark]["marking"]) then
+				SetRaidTarget(destGUID, 7) -- Skull
+				SendChatMessage( globule_priority[do_mark]["warning"], "RAID_WARNING" )
+				do_mark = 0
+			end
+		end
 	end
 end
 

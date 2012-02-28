@@ -119,7 +119,9 @@ function OM_wait(delay, func, ...)
 	if not waitFrame then
 		waitFrame = CreateFrame("Frame", nil, UIParent)
 		waitFrame:SetScript("OnUpdate", function (self, elapse)
-			for i = 1, #waitTable do
+			local count = #waitTable;
+			local i = 1;
+			while(i<=count) do
 				local waitRecord = tremove(waitTable, i)
 				local d = tremove(waitRecord, 1)
 				local f = tremove(waitRecord, 1)

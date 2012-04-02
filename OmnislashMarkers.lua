@@ -8,8 +8,8 @@ local hot_standers = {
 		[3] = ""
 	},
 	[2] = {
-		[1] = "Dardius",
-		[2] = "Meitra",
+		[1] = "Meitra",
+		[2] = "Misztermakáj",
 		[3] = ""
 	},
 	[3] = {
@@ -23,8 +23,8 @@ local hot_standers = {
 		[3] = ""
 	},
 	[5] = {
-		[1] = "Dardius",
-		[2] = "Meitra",
+		[1] = "Meitra",
+		[2] = "Misztermakáj",
 		[3] = ""
 	},
 	[6] = {
@@ -256,6 +256,30 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 				SendChatMessage( globule_priority[do_mark]["warning"], "RAID_WARNING" )
 				do_mark = 0
 			end
+		end
+		
+		-- Warmaster Blackhorn
+		if playerWithBuff == "Twilight Sapper" then
+			-- SendChatMessage( "Twilight Sapper {rt8}", "RAID_WARNING" )
+			SetRaidTarget(destGUID, 8)
+		end
+		if buffName == "Twilight Barrage" and event == "SPELL_AURA_APPLIED" then
+			icon = 1	
+			
+			for i,v in pairs(listOfPlayers) do
+				if (v >= icon) then
+					icon = v+1
+				end
+			end
+
+			SetRaidTargetIcon(destGUID, icon)
+			SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt" .. icon .. "}", "RAID_WARNING" )
+			listOfPlayers[destGUID] = icon
+		end
+		if buffName == "Twilight Barrage" and event == "SPELL_AURA_REMOVED" then
+			SetRaidTargetIcon(destGUID, 0)
+			SendChatMessage( buffName .. " faded from " .. playerWithBuff, "RAID" )
+			listOfPlayers[destGUID] = 0
 		end
 	end
 end

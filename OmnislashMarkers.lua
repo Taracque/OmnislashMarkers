@@ -140,6 +140,22 @@ function OM_wait(delay, func, ...)
 	return true
 end
 
+function OM_hasDeBuff(unit, spellName, casterUnit)
+	local i = 1;
+	while true do
+		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitDebuff(unit, i);
+		if not name then
+			break;
+		end
+		if (name) and (spellName) then
+			if string.match(name, spellName) and ((unitCaster == casterUnit) or (casterUnit == nil)) then
+				return name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable;
+			end
+		end
+		i = i + 1;
+	end
+end
+
 function OM_ULTRAXION_displayWarning(counter)
 	local i
 
@@ -259,7 +275,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		end
 		
 		-- Warmaster Blackhorn
-		if playerWithBuff == "Twilight Sapper" then
+		if playerWithBuff == "Twilight Elite Dreadblade" then
 			-- SendChatMessage( "Twilight Sapper {rt8}", "RAID_WARNING" )
 			SetRaidTarget(destGUID, 8)
 		end
@@ -280,6 +296,30 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			SetRaidTargetIcon(destGUID, 0)
 			SendChatMessage( buffName .. " faded from " .. playerWithBuff, "RAID" )
 			listOfPlayers[destGUID] = 0
+		end
+		
+		-- Spine HC
+		if buffName == "Blood Corruption: Death" and event == "SPELL_AURA_APPLIED" then
+			icon = 1	
+			
+			for i,v in pairs(listOfPlayers) do
+				if (v >= icon) then
+					icon = v+1
+				end
+			end
+
+			SetRaidTargetIcon(destGUID, icon)
+			SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt" .. icon .. "}", "RAID_WARNING" )
+			listOfPlayers[destGUID] = icon
+		end
+		if buffName == "Blood Corruption: Death" and event == "SPELL_AURA_REMOVED" then
+			if (OM_hasDeBuff(destGUID, buffName)) then
+				SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt" .. listOfPlayers[destGUID] .. "}", "RAID_WARNING" )
+			else
+				SetRaidTargetIcon(destGUID, 0)
+				SendChatMessage( buffName .. " faded from " .. playerWithBuff, "RAID" )
+				listOfPlayers[destGUID] = 0
+			end
 		end
 	end
 end

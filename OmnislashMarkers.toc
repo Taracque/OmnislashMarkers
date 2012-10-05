@@ -1,7 +1,7 @@
-## Interface: 40300
+## Interface: 50001
 ## Title: OmnislashMarkers
-## Notes: Mark for Zon'ozz Heroic, Group 1 marked star, circle, diamond
+## Notes: Raid marks for Omnislash guild
 ## Author: Taracque
-## Version: 0.1
+## Version: 0.3
 
 OmnislashMarkers.lua

@@ -32,19 +32,12 @@ end
 
 function events:UNIT_SPELLCAST_SUCCEEDED(event, ...)
 	if enabled then
-		local spellID = select(5, ...)
-		-- Yor'sahj HC
-		if globule_priority[spellID] then
-			SendChatMessage( globule_priority[spellID]["warning"], "RAID_WARNING" )
-			do_mark = spellID
-		end
 	end
 end
 
 function OM_DetectInstance()
 	local iname, itype, idifficulty, idifficultyName, isize = GetInstanceInfo()
 	if (isize and ( isize >= 10) and ( itype == "raid" )) then
-		print("OmnislashMarkers - Enabled, requires raid assist!")
 		if (
 			(idifficultyName == "10 Player (Heroic)") or
 			(idifficultyName == "25 Player (Heroic)")
@@ -53,6 +46,7 @@ function OM_DetectInstance()
 		else
 			heroic = false
 		end
+		print("OmnislashMarkers - " .. iname .. " enabled, requires raid assist! ")
 		instanceName = iname
 		enabled = true
 	else

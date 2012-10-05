@@ -87,8 +87,11 @@ end
 function OM_DetectEncounter()
 	print("OmnislashMarkers - Detecting encounter")
 	-- Mogu'shan Vaults boss IDS:  Cobalt: 60051 Jade: 60043 Jasper: 59915
-
-	encounter = ""
+	if (UnitName("boss1")) then
+		print("Boss: " .. UnitName("boss1") .. " detected")
+	else
+		encounter = ""
+	end
 end
 
 function OM_hasDeBuff(unit, spellName, casterUnit)

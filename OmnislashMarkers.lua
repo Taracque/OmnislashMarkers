@@ -164,15 +164,17 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					local minEnergy = 1000
 					local tmpName = UnitName( "boss" .. i )
 					if (tmpName ~= skullBoss) then
-						if (UnitPower( "boss" .. i ) > maxEnergy) then
-							maxEnergy = "boss" .. i
-						end
-						if (UnitPower( "boss" .. i ) < minEnergy) then
-							minEnergy = "boss" .. i
+						if (UnitHealth( "boss" .. i) > 0) then
+							if (UnitPower( "boss" .. i ) > maxEnergy) then
+								maxEnergy = "boss" .. i
+							end
+							if (UnitPower( "boss" .. i ) < minEnergy) then
+								minEnergy = "boss" .. i
+							end
 						end
 					end
 					-- cross marked energy > 75 then change it to lower one
-					if (UnitPower( crossBoss ) > 75) then
+					if (crossBoss ~= "") and (UnitPower( crossBoss ) > 75) then
 						SetRaidTarget(bosses[minEnergy], 7) -- cross
 						SendChatMessage( "Taunt {rt8}" .. UnitName(bosses[minEnergy]) .. "{rt7}!!!", "RAID_WARNING" )
 					end

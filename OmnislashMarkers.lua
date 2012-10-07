@@ -8,6 +8,10 @@ local encounter = ""
 local do_mark = 0
 local waitTable = {}
 local waitFrame = nil
+local activeDebuff = ""
+local bosses = {}
+local skullBoss = ""
+local crossBoss = ""
 
 function events:PLAYER_ENTERING_WORLD(...)
 	print("OmnislashMarkers Loaded")
@@ -115,17 +119,66 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 	local i
 
 	if enabled then
-		if (encounter ~= "") then
+		if (encounter == "") then
+			if (buffName == "Solid Stone") then
+				encounter = "The Stone Guard"
+				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detcted", "RAID" )
+			end
+		else
 			playerWithBuff = select(7, ...)
 			buffName = select(11, ...)
 	
 			-- MoP raids
 			-- Mogu'shan Vaults
 			if (encounter == "The Stone Guard") then
-			
-			
+				if (buffName == "Solid Stone") then
+					bosses[sourceName] = sourceGUID
+				end
+				-- check wich guardian needs to be charged
+				if (
+					((buffName == "Cobalt Petrification") and (activeDebuff ~= buffName)) or
+					((buffName == "Jade Petrification") and (activeDebuff ~= buffName)) or
+					((buffName == "Jasper Petrification") and (activeDebuff ~= buffName)) or
+					((buffName == "Amethyst Petrification") and (activeDebuff ~= buffName))
+				) then
+					activeDebuff = buffName
+					-- mark skull
+					if (activeDebuff == "Cobalt Petrification") then
+						skullBoss = "Cobalt Guardian"
+						SetRaidTarget(bosses["Cobalt Guardian"], 8)
+					elseif (activeDebuff == "Jade Petrification") then
+						skullBoss = "Jade Guardian"
+						SetRaidTarget(bosses["Jade Guardian"], 8)
+					elseif (activeDebuff == "Jasper Petrification") then
+						skullBoss = "Jasper Guardian"
+						SetRaidTarget(bosses["Jasper Guardian"], 8)
+					elseif (activeDebuff == "Amethyst Petrification") then
+						skullBoss = "Amethyst Guardian"
+						SetRaidTarget(bosses["Amethyst Guardian"], 8)
+					end
+					SendChatMessage( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!", "RAID_WARNING" )
+				end
+				-- check boss energies
+				for i=1, 4 do
+					local maxEnergy = 0
+					local minEnergy = 1000
+					local tmpName = UnitName( "boss" .. i )
+					if (tmpName ~= skullBoss) then
+						if (UnitPower( "boss" .. i ) > maxEnergy) then
+							maxEnergy = "boss" .. i
+						end
+						if (UnitPower( "boss" .. i ) < minEnergy) then
+							minEnergy = "boss" .. i
+						end
+					end
+					-- cross marked energy > 75 then change it to lower one
+					if (UnitPower( crossBoss ) > 75) then
+						SetRaidTarget(bosses[minEnergy], 7) -- cross
+						SendChatMessage( "Taunt {rt8}" .. UnitName(bosses[minEnergy]) .. "{rt7}!!!", "RAID_WARNING" )
+					end
+				end
 			end
-		
+			
 		end
 	end
 end

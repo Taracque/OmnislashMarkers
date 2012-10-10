@@ -29,7 +29,7 @@ end
 function events:PLAYER_REGEN_ENABLED(...)
 	local i,v
 	for i,v in pairs(listOfPlayers) do
-		SetRaidTargetIcon(i, 0)
+		SetRaidTarget(i, 0)
 	end
 	listOfPlayers = {}
 end
@@ -178,34 +178,39 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 				-- check boss energies
 				for i=1, 4 do
 					local maxEnergy = 0
+					local maxEnergyBoss = ""
 					local minEnergy = 1000
+					local minEnergyBoss = ""
 					local tmpName = UnitName( "boss" .. i )
 					if (tmpName ~= skullBoss) then
 						if (UnitHealth( "boss" .. i) > 0) then
 							if (UnitPower( "boss" .. i ) > maxEnergy) then
-								maxEnergy = "boss" .. i
+								maxEnergy = UnitPower( "boss" .. i )
+								minEnergyBoss = "boss" .. i
 							end
 							if (UnitPower( "boss" .. i ) < minEnergy) then
-								minEnergy = "boss" .. i
+								minEnergy = UnitPower("boss" .. i)
+								maxEnergyBoss = "boss" .. i
 							end
 						end
 					end
 					-- cross marked energy > 50 then change it to lower one
-					if (crossBoss ~= "") and (UnitPower( crossBoss ) > 50) then
-						SetRaidTarget( minEnergy, 7) -- cross
-						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergy) .. "{rt7}!!!", "RAID_WARNING" )
+					if (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) then
+						SetRaidTarget( minEnergyBoss, 7) -- cross
+						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!", "RAID_WARNING" )
+						crossBoss = minEnergyBoss
 					end
 				end
 			end
 			if (encounter == "Feng the Accursed") then
 				if (buffName == "Arcane Resonance" and event == "SPELL_AURA_APPLIED") then
 					-- Mark Arcane Resonance
-					SetRaidTargetIcon(destGUID, 3)
+					SetRaidTarget(destGUID, 3)
 					SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
 				end
 				if (buffName == "Arcane Resonance" and event == "SPELL_AURA_REMOVED") then
 					-- Remove Arcane Resonance mark
-					SetRaidTargetIcon(destGUID, 0)
+					SetRaidTarget(destGUID, 0)
 					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
 				end
 			end

@@ -93,6 +93,9 @@ function OM_DetectEncounter()
 	-- Mogu'shan Vaults boss IDS:  Cobalt: 60051 Jade: 60043 Jasper: 59915
 	if (UnitName("boss1")) then
 		print("Boss: " .. UnitName("boss1") .. " detected")
+		if (UnitName("boss1") == "Feng the Accursed") then
+			encounter = "Feng the Accursed"
+		end
 	else
 		encounter = ""
 	end
@@ -113,15 +116,18 @@ function OM_hasDeBuff(unit, spellName, casterUnit)
 		i = i + 1;
 	end
 end
+--								1		 2		  3		   4			5			6		7		 8			9			10			11			12		13
 -- 		timestamp, event, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags, spellId, spellName, spellSchool, damage
 function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 	local i
+	local party
 
 	if enabled then
 		playerWithBuff = select(7, ...)
 		sourceName = select(3, ...)
 		buffName = select(11, ...)
 		sourceGUID = select(2, ...)
+		destGUID = select(6, ...)
 		
 		if (encounter == "") then
 			if (buffName == "Solid Stone") then
@@ -191,7 +197,18 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					end
 				end
 			end
-			
+			if (encounter == "Feng the Accursed") then
+				if (buffName == "Arcane Resonance" and event == "SPELL_AURA_APPLIED") then
+					-- Mark Arcane Resonance
+					SetRaidTargetIcon(destGUID, 3)
+					SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
+				end
+				if (buffName == "Arcane Resonance" and event == "SPELL_AURA_REMOVED") then
+					-- Remove Arcane Resonance mark
+					SetRaidTargetIcon(destGUID, 0)
+					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
+				end
+			end
 		end
 	end
 end

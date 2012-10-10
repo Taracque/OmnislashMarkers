@@ -89,7 +89,7 @@ function OM_wait(delay, func, ...)
 end
 
 function OM_DetectEncounter()
-	print("OmnislashMarkers - Detecting encounter")
+	-- print("OmnislashMarkers - Detecting encounter")
 	-- Mogu'shan Vaults boss IDS:  Cobalt: 60051 Jade: 60043 Jasper: 59915
 	if (UnitName("boss1")) then
 		print("Boss: " .. UnitName("boss1") .. " detected")
@@ -113,16 +113,26 @@ function OM_hasDeBuff(unit, spellName, casterUnit)
 		i = i + 1;
 	end
 end
-
+-- 		timestamp, event, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags, spellId, spellName, spellSchool, damage
 function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
- 	local timestamp, combatEvent, hideCaster, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags = ...; -- Those arguments appear for all combat event variants.
 	local i
 
 	if enabled then
+		playerWithBuff = select(7, ...)
+		sourceName = select(3, ...)
+		buffName = select(11, ...)
+		sourceGUID = select(2, ...)
+		
 		if (encounter == "") then
 			if (buffName == "Solid Stone") then
 				encounter = "The Stone Guard"
 				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detcted", "RAID" )
+				
+				for i=1, 4 do
+					if (UnitHealth( "boss" .. i) > 0) then
+						bosses[UnitName( "boss" .. i )] = "boss" .. i
+					end
+				end
 			end
 		else
 			playerWithBuff = select(7, ...)
@@ -135,28 +145,29 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					bosses[sourceName] = sourceGUID
 				end
 				-- check wich guardian needs to be charged
-				if (
-					((buffName == "Cobalt Petrification") and (activeDebuff ~= buffName)) or
-					((buffName == "Jade Petrification") and (activeDebuff ~= buffName)) or
-					((buffName == "Jasper Petrification") and (activeDebuff ~= buffName)) or
-					((buffName == "Amethyst Petrification") and (activeDebuff ~= buffName))
-				) then
-					activeDebuff = buffName
-					-- mark skull
-					if (activeDebuff == "Cobalt Petrification") then
-						skullBoss = "Cobalt Guardian"
-						SetRaidTarget(bosses["Cobalt Guardian"], 8)
-					elseif (activeDebuff == "Jade Petrification") then
-						skullBoss = "Jade Guardian"
-						SetRaidTarget(bosses["Jade Guardian"], 8)
-					elseif (activeDebuff == "Jasper Petrification") then
-						skullBoss = "Jasper Guardian"
-						SetRaidTarget(bosses["Jasper Guardian"], 8)
-					elseif (activeDebuff == "Amethyst Petrification") then
-						skullBoss = "Amethyst Guardian"
-						SetRaidTarget(bosses["Amethyst Guardian"], 8)
+				if (event == "SPELL_AURA_APPLIED") then
+					if (
+						((buffName == "Cobalt Petrification") and (activeDebuff ~= buffName)) or
+						((buffName == "Jade Petrification") and (activeDebuff ~= buffName)) or
+						((buffName == "Jasper Petrification") and (activeDebuff ~= buffName)) or
+						((buffName == "Amethyst Petrification") and (activeDebuff ~= buffName))
+					) then
+						activeDebuff = buffName
+						-- mark skull
+						if (activeDebuff == "Cobalt Petrification") then
+							skullBoss = "Cobalt Guardian"
+						elseif (activeDebuff == "Jade Petrification") then
+							skullBoss = "Jade Guardian"
+						elseif (activeDebuff == "Jasper Petrification") then
+							skullBoss = "Jasper Guardian"
+						elseif (activeDebuff == "Amethyst Petrification") then
+							skullBoss = "Amethyst Guardian"
+						end
+						if (bosses[skullBoss]) then
+							SetRaidTarget(bosses[skullBoss], 8)
+						end
+						SendChatMessage( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!", "RAID_WARNING" )
 					end
-					SendChatMessage( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!", "RAID_WARNING" )
 				end
 				-- check boss energies
 				for i=1, 4 do
@@ -173,10 +184,10 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 							end
 						end
 					end
-					-- cross marked energy > 75 then change it to lower one
-					if (crossBoss ~= "") and (UnitPower( crossBoss ) > 75) then
-						SetRaidTarget(bosses[minEnergy], 7) -- cross
-						SendChatMessage( "Taunt {rt8}" .. UnitName(bosses[minEnergy]) .. "{rt7}!!!", "RAID_WARNING" )
+					-- cross marked energy > 50 then change it to lower one
+					if (crossBoss ~= "") and (UnitPower( crossBoss ) > 50) then
+						SetRaidTarget( minEnergy, 7) -- cross
+						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergy) .. "{rt7}!!!", "RAID_WARNING" )
 					end
 				end
 			end

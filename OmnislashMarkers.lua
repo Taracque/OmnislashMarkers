@@ -133,7 +133,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			if (buffName == "Solid Stone") then
 				encounter = "The Stone Guard"
 				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detcted", "RAID" )
-				
+				print( "OmnislashMarkers - " .. encounter .. " encounter detcted" )
 				for i=1, 4 do
 					if (UnitHealth( "boss" .. i) > 0) then
 						bosses[UnitName( "boss" .. i )] = "boss" .. i
@@ -173,6 +173,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 							SetRaidTarget(bosses[skullBoss], 8)
 						end
 						SendChatMessage( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!", "RAID_WARNING" )
+						print( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!" )
 					end
 				end
 				-- check boss energies
@@ -198,6 +199,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					if (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) then
 						SetRaidTarget( minEnergyBoss, 7) -- cross
 						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!", "RAID_WARNING" )
+						print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" )
 						crossBoss = minEnergyBoss
 					end
 				end
@@ -207,11 +209,13 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					-- Mark Arcane Resonance
 					SetRaidTarget(destGUID, 3)
 					SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
+					print( buffName .. " on " .. playerWithBuff .. "{rt3}" )
 				end
 				if (buffName == "Arcane Resonance" and event == "SPELL_AURA_REMOVED") then
 					-- Remove Arcane Resonance mark
 					SetRaidTarget(destGUID, 0)
 					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
+					print( buffName .. " faded from " .. playerWithBuff .. "{rt3}" )
 				end
 			end
 		end

@@ -177,7 +177,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 							SetRaidTarget(bosses[skullBoss], 8)
 						end
 						SendChatMessage( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!", "RAID_WARNING" )
-						print( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!" )
+						print( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!" .. bosses[skullBoss] )
 					end
 				end
 				-- check boss energies
@@ -203,7 +203,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					if (crossBoss == "") or ( (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) ) then
 						SetRaidTarget( minEnergyBoss, 7) -- cross
 						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!", "RAID_WARNING" )
-						print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" )
+						print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" .. minEnergyBoss )
 						crossBoss = minEnergyBoss
 					end
 				end

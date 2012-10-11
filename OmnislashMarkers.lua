@@ -134,8 +134,8 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		if (encounter == "") then
 			if (buffName == "Solid Stone") then
 				encounter = "The Stone Guard"
-				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detcted", "RAID" )
-				print( "OmnislashMarkers - " .. encounter .. " encounter detcted" )
+				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detected", "RAID" )
+				-- print( "OmnislashMarkers - " .. encounter .. " encounter detected" )
 				skullBoss = ""
 				crossBoss = ""
 				for i=1, 4 do
@@ -151,9 +151,9 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			-- MoP raids
 			-- Mogu'shan Vaults
 			if (encounter == "The Stone Guard") then
-				if (buffName == "Solid Stone") then
-					bosses[sourceName] = sourceGUID
-				end
+--				if (buffName == "Solid Stone") then
+--					bosses[sourceName] = sourceGUID
+--				end
 				-- check wich guardian needs to be charged
 				if (event == "SPELL_AURA_APPLIED") then
 					if (
@@ -164,20 +164,12 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					) then
 						activeDebuff = buffName
 						-- mark skull
-						if (activeDebuff == "Cobalt Petrification") then
-							skullBoss = "Cobalt Guardian"
-						elseif (activeDebuff == "Jade Petrification") then
-							skullBoss = "Jade Guardian"
-						elseif (activeDebuff == "Jasper Petrification") then
-							skullBoss = "Jasper Guardian"
-						elseif (activeDebuff == "Amethyst Petrification") then
-							skullBoss = "Amethyst Guardian"
-						end
+						skullBoss = sourceName
 						if (bosses[skullBoss]) then
 							SetRaidTarget(bosses[skullBoss], 8)
+							-- print( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!" .. bosses[skullBoss] )
 						end
 						SendChatMessage( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!", "RAID_WARNING" )
-						print( buffName .. " activated, kill {rt8}" .. skullBoss .. "{rt8}!!!" .. bosses[skullBoss] )
 					end
 				end
 				-- check boss energies
@@ -191,19 +183,21 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 						if (UnitHealth( "boss" .. i) > 0) then
 							if (UnitPower( "boss" .. i ) > maxEnergy) then
 								maxEnergy = UnitPower( "boss" .. i )
-								minEnergyBoss = "boss" .. i
+								maxEnergyBoss = "boss" .. i
 							end
 							if (UnitPower( "boss" .. i ) < minEnergy) then
 								minEnergy = UnitPower("boss" .. i)
-								maxEnergyBoss = "boss" .. i
+								minEnergyBoss = "boss" .. i
 							end
 						end
 					end
-					-- cross marked energy > 50 then change it to lower one
-					if (crossBoss == "") or ( (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) ) then
+				end
+				-- cross marked energy > 50 then change it to lower one
+				if (crossBoss == "") or ( (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) ) then
+					if (minEnergyBoss ~= crossBoss) and (UnitName(minEnergyBoss) ) then
 						SetRaidTarget( minEnergyBoss, 7) -- cross
 						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!", "RAID_WARNING" )
-						print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" .. minEnergyBoss )
+						-- print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" .. minEnergyBoss )
 						crossBoss = minEnergyBoss
 					end
 				end
@@ -213,13 +207,13 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					-- Mark Arcane Resonance
 					SetRaidTarget(destGUID, 3)
 					SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
-					print( buffName .. " on " .. playerWithBuff .. "{rt3}" )
+					-- print( buffName .. " on " .. playerWithBuff .. "{rt3}" )
 				end
 				if (buffName == "Arcane Resonance" and event == "SPELL_AURA_REMOVED") then
 					-- Remove Arcane Resonance mark
 					SetRaidTarget(destGUID, 0)
 					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
-					print( buffName .. " faded from " .. playerWithBuff .. "{rt3}" )
+					-- print( buffName .. " faded from " .. playerWithBuff .. "{rt3}" )
 				end
 			end
 		end

@@ -136,6 +136,8 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 				encounter = "The Stone Guard"
 				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detcted", "RAID" )
 				print( "OmnislashMarkers - " .. encounter .. " encounter detcted" )
+				skullBoss = ""
+				crossBoss = ""
 				for i=1, 4 do
 					if (UnitHealth( "boss" .. i) > 0) then
 						bosses[UnitName( "boss" .. i )] = "boss" .. i

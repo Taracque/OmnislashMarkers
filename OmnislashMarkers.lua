@@ -196,7 +196,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 						end
 					end
 					-- cross marked energy > 50 then change it to lower one
-					if (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) then
+					if (crossBoss == "") or ( (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) ) then
 						SetRaidTarget( minEnergyBoss, 7) -- cross
 						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!", "RAID_WARNING" )
 						print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" )

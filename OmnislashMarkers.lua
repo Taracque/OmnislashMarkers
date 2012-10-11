@@ -32,6 +32,8 @@ function events:PLAYER_REGEN_ENABLED(...)
 		SetRaidTarget(i, 0)
 	end
 	listOfPlayers = {}
+	skullBoss = ""
+	crossBoss = ""
 end
 
 function events:UNIT_SPELLCAST_SUCCEEDED(event, ...)

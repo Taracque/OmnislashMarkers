@@ -151,9 +151,9 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			-- MoP raids
 			-- Mogu'shan Vaults
 			if (encounter == "The Stone Guard") then
---				if (buffName == "Solid Stone") then
---					bosses[sourceName] = sourceGUID
---				end
+				if (buffName == "Solid Stone") then
+
+				end
 				-- check wich guardian needs to be charged
 				if (event == "SPELL_AURA_APPLIED") then
 					if (
@@ -174,6 +174,10 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 				end
 				-- check boss energies
 				for i=1, 4 do
+					-- rescan boss names
+					if (UnitHealth( "boss" .. i) > 0) then
+						bosses[UnitName( "boss" .. i )] = "boss" .. i
+					end
 					local maxEnergy = 0
 					local maxEnergyBoss = ""
 					local minEnergy = 1000

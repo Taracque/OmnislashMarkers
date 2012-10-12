@@ -12,6 +12,19 @@ local activeDebuff = ""
 local bosses = {}
 local skullBoss = ""
 local crossBoss = ""
+local garajal_priority = {
+	["dps"] = {
+		[1] = "Felmosórongy",
+		[2] = "Adorján",
+		[3] = "Kapszlock",
+		[4] = "Balucicus"
+	},
+	["heal"] = {
+		[1] = "Malliore",
+		[2] = "Ødîn",
+		[3] = "Tacsko"
+	}
+}
 
 function events:PLAYER_ENTERING_WORLD(...)
 	print("OmnislashMarkers Loaded")
@@ -219,6 +232,9 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "{rt3}", "RAID_WARNING" )
 					-- print( buffName .. " faded from " .. playerWithBuff .. "{rt3}" )
 				end
+			end
+			if (encounter == "Gara'jal the Spiritbinder") then
+			
 			end
 		end
 	end

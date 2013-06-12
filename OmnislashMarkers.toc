@@ -1,7 +1,7 @@
-## Interface: 50001
+## Interface: 50300
 ## Title: OmnislashMarkers
 ## Notes: Raid marks for Omnislash guild
 ## Author: Taracque
-## Version: 0.3
+## Version: 0.4
 
 OmnislashMarkers.lua

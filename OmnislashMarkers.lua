@@ -12,19 +12,7 @@ local activeDebuff = ""
 local bosses = {}
 local skullBoss = ""
 local crossBoss = ""
-local garajal_priority = {
-	["dps"] = {
-		[1] = "Felmosórongy",
-		[2] = "Adorján",
-		[3] = "Kapszlock",
-		[4] = "Balucicus"
-	},
-	["heal"] = {
-		[1] = "Malliore",
-		[2] = "Ødîn",
-		[3] = "Tacsko"
-	}
-}
+local raidSize = 0;
 
 function events:PLAYER_ENTERING_WORLD(...)
 	print("OmnislashMarkers Loaded")
@@ -65,9 +53,10 @@ function OM_DetectInstance()
 		else
 			heroic = false
 		end
-		print("OmnislashMarkers - " .. iname .. " enabled, requires raid assist! ")
+		print("OmnislashMarkers - " .. iname .. "(" .. isize .. ") enabled, requires raid assist! ")
 		instanceName = iname
-		enabled = true
+		raidSize = isize;
+		enabled = true;
 	else
 		print("OmnislashMarkers - Disabled (not in raid)")
 		enabled = false
@@ -107,10 +96,13 @@ function OM_DetectEncounter()
 	-- print("OmnislashMarkers - Detecting encounter")
 	-- Mogu'shan Vaults boss IDS:  Cobalt: 60051 Jade: 60043 Jasper: 59915
 	if (UnitName("boss1")) then
-		print("Boss: " .. UnitName("boss1") .. " detected")
 		if (UnitName("boss1") == "Feng the Accursed") then
 			encounter = "Feng the Accursed"
 		end
+		if (UnitName("boss1") == "Quet'zal") or (UnitName("boss1") == "Ro'shak") or (UnitName("boss1") == "Dam'ren") then
+			encounter = "Iron Qon";
+		end
+		print("Encounter: " .. encounter .. " detected")
 	else
 		encounter = ""
 	end
@@ -235,6 +227,47 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 			end
 			if (encounter == "Gara'jal the Spiritbinder") then
 			
+			end
+			if (encounter == "Iron Qon") then
+				if (buffName == "Lightning Storm" and event == "SPELL_AURA_APPLIED") then
+					local nearest = 100;
+					local nearest_index = 0;
+					local playerX = 0;
+					local playerY = 0;
+					local posX = 0;
+					local posY = 0;
+					-- Mark Arcane Resonance
+					SetRaidTarget(destGUID, 8);
+					SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt8}", "RAID_WARNING" )
+					-- find nearest player
+					for i=1, raidSize do
+						if (UnitGUID("raid" .. i) == destGUID) then
+							playerX, playerY = GetPlayerMapPosition("raid" .. i);
+							SetRaidTarget("raid" .. i, 8);
+							skullBoss = "raid" .. i;
+						end
+					end
+					for i=1, raidSize do
+						posX, posY = GetPlayerMapPosition("raid" .. i);
+						health = UnitHealth("raid" .. i);
+						-- check against last data
+						if (UnitGUID("raid" .. i) ~= destGUID) and (health) and (health>0) then
+							local tmpdist = ( (posX-playerX)*(posX-playerX) ) + ( (posY-playerY)*(posY-playerY) );
+							if tmpdist<nearest then
+								nearest = tmpdist;
+								nearest_index = i;
+							end
+						end
+					end
+					if (nearest_index ~= 0) then
+						SetRaidTarget("raid" .. nearest_index, 7);
+						crossBoss = "raid" .. nearest_index;
+					end
+				end
+				if (buffName == "Lightning Storm" and event == "SPELL_AURA_REMOVED") then
+					SetRaidTarget(skullBoss, 0);
+					SetRaidTarget(crossBoss, 0);
+				end
 			end
 		end
 	end

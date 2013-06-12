@@ -262,6 +262,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					if (nearest_index ~= 0) then
 						SetRaidTarget("raid" .. nearest_index, 7);
 						crossBoss = "raid" .. nearest_index;
+						SendChatMessage( UnitName(crossBoss) .. "{rt7} is the nearest alive player", "RAID_WARNING" )
 					end
 				end
 				if (buffName == "Lightning Storm" and event == "SPELL_AURA_REMOVED") then

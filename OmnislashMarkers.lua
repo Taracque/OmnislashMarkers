@@ -270,6 +270,50 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					SetRaidTarget(crossBoss, 0);
 				end
 			end
+			if (encounter == "Horridon") then
+				if (event == "UNIT_DIED") then
+					if destGUID == skullBoss then
+						SetRaidTarget(destGUID, 0)
+						skullBoss = "";
+					end
+					if destGUID == crossBoss then
+						SetRaidTarget(destGUID, 0)
+						crossBoss = "";
+					end
+				end
+				if (skullBoss == "") and (playerWithBuff == "Farraki Wastewalker") then
+					SetRaidTarget(destGUID, 8)
+					skullBoss = destGUID
+				end
+				if (skullBoss == "") and (playerWithBuff == "Gurubashi Venom Priest") then
+					SetRaidTarget(destGUID, 8)
+					skullBoss = destGUID
+				end
+				if (skullBoss == "") and (playerWithBuff == "Drakkari Frozen Warlord") then
+					SetRaidTarget(destGUID, 8)
+					skullBoss = destGUID
+				end
+				if (skullBoss == "") and (playerWithBuff == "Amani'shi Beast Shaman") then
+					SetRaidTarget(destGUID, 8)
+					skullBoss = destGUID
+				end
+				if (skullBoss == "") and (playerWithBuff == "Amani Warbear") then
+					SetRaidTarget(destGUID, 8)
+					skullBoss = destGUID
+				end
+				if (crossBoss == "") and (playerWithBuff == "Zandalari Dinomancer") then
+					SetRaidTarget(destGUID, 7)
+					crossBoss = destGUID
+				end
+				if (crossBoss == "") and (playerWithBuff == "Venomous Effusions") then
+					SetRaidTarget(destGUID, 7)
+					crossBoss = destGUID
+				end
+				if (crossBoss == "") and (playerWithBuff == "Amani'shi Flame Caster") then
+					SetRaidTarget(destGUID, 7)
+					crossBoss = destGUID
+				end
+			end
 		end
 	end
 end

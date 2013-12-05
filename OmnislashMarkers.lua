@@ -13,6 +13,8 @@ local bosses = {}
 local skullBoss = ""
 local crossBoss = ""
 local raidSize = 0;
+local markIndex = 0;
+local markPlayers = {}
 
 function events:PLAYER_ENTERING_WORLD(...)
 	print("OmnislashMarkers Loaded")
@@ -102,7 +104,12 @@ function OM_DetectEncounter()
 		if (UnitName("boss1") == "Quet'zal") or (UnitName("boss1") == "Ro'shak") or (UnitName("boss1") == "Dam'ren") then
 			encounter = "Iron Qon";
 		end
-		print("Encounter: " .. encounter .. " detected")
+		if (UnitName("boss1") == "Sha of Pride") then
+			encounter = "Sha of Pride"
+		end
+		if (encounter ~= "") then
+			print("Encounter: " .. encounter .. " detected")
+		end
 	else
 		encounter = ""
 	end
@@ -312,6 +319,26 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 				if (crossBoss == "") and (playerWithBuff == "Amani'shi Flame Caster") then
 					SetRaidTarget(destGUID, 7)
 					crossBoss = destGUID
+				end
+			end
+			if (encounter == "Sha of Pride") then
+				if (buffName == "Mark of Arrogance" and event == "SPELL_AURA_APPLIED") then
+					-- Mark Mark of Arrogance targets
+					SetRaidTarget(destGUID, 1 + markIndex);
+					markIndex = markIndex + 1;
+					SendChatMessage( buffName .. " on " .. playerWithBuff .. "{rt" .. (markIndex) .. "}", "RAID_WARNING" )
+					if (markIndex == 2) then
+						markIndex = 0;
+					end
+					-- print( buffName .. " on " .. playerWithBuff .. "{rt3}" )
+				end
+				if (buffName == "Mark of Arrogance" and event == "SPELL_AURA_REMOVED") then
+					-- Remove Mark of Arrogance mark
+					SetRaidTarget(destGUID, 0)
+					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "", "RAID_WARNING" )
+				end
+				if (buffName == "Weakened Resolve" and event == "SPELL_AURA_REMOVED") then
+					SendChatMessage( buffName .. " faded from " .. playerWithBuff .. "", "RAID_WARNING" )
 				end
 			end
 		end

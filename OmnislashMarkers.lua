@@ -14,7 +14,6 @@ local skullBoss = ""
 local crossBoss = ""
 local raidSize = 0;
 local markIndex = 0;
-local markPlayers = {}
 
 function events:PLAYER_ENTERING_WORLD(...)
 	print("OmnislashMarkers Loaded")
@@ -104,11 +103,14 @@ function OM_DetectEncounter()
 		if (UnitName("boss1") == "Quet'zal") or (UnitName("boss1") == "Ro'shak") or (UnitName("boss1") == "Dam'ren") then
 			encounter = "Iron Qon";
 		end
+		if (UnitName("boss1") == "Thok the Bloodthirsty") then
+			encounter = "Thok the Bloodthirsty";
+		end
 		if (UnitName("boss1") == "Sha of Pride") then
 			encounter = "Sha of Pride"
 		end
 		if (encounter ~= "") then
-			print("Encounter: " .. encounter .. " detected")
+			SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detected", "RAID" )
 		end
 	else
 		encounter = ""
@@ -140,6 +142,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 		playerWithBuff = select(7, ...)
 		sourceName = select(3, ...)
 		buffName = select(11, ...)
+		buffID = select(10, ...)
 		sourceGUID = select(2, ...)
 		destGUID = select(6, ...)
 		
@@ -155,6 +158,10 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 						bosses[UnitName( "boss" .. i )] = "boss" .. i
 					end
 				end
+			end
+			if (buffName == "Impale") and (buffID == 134691) then
+				encounter = "Iron Qon";
+				SendChatMessage( "OmnislashMarkers - " .. encounter .. " encounter detected", "RAID" )
 			end
 		else
 			playerWithBuff = select(7, ...)
@@ -210,7 +217,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 				end
 				-- cross marked energy > 50 then change it to lower one
 				if (crossBoss == "") or ( (UnitHealth( crossBoss ) > 0) and (UnitPower( crossBoss ) > 50) ) then
-					if (minEnergyBoss ~= crossBoss) and (UnitName(minEnergyBoss) ) then
+					if (minEnergyBoss) and (minEnergyBoss ~= "") and (minEnergyBoss ~= crossBoss) and (UnitName(minEnergyBoss) ) then
 						SetRaidTarget( minEnergyBoss, 7) -- cross
 						SendChatMessage( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!", "RAID_WARNING" )
 						-- print( "Taunt {rt7}" .. UnitName(minEnergyBoss) .. "{rt7}!!!" .. minEnergyBoss )
@@ -312,14 +319,19 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
 					SetRaidTarget(destGUID, 7)
 					crossBoss = destGUID
 				end
-				if (crossBoss == "") and (playerWithBuff == "Venomous Effusions") then
+				if (crossBoss == "") and (playerWithBuff == "Venomous Effusion") then
+					SendChatMessage( "{rt7} Venomous Effusions {rt7}", "RAID_WARNING" )
 					SetRaidTarget(destGUID, 7)
 					crossBoss = destGUID
 				end
 				if (crossBoss == "") and (playerWithBuff == "Amani'shi Flame Caster") then
+					SendChatMessage( "{rt7} Amani'shi Flame Caster {rt7}", "RAID_WARNING" )
 					SetRaidTarget(destGUID, 7)
 					crossBoss = destGUID
 				end
+			end
+			-- Siege of Orgrimmar
+			if (encounter == "Thok the Bloodthirsty") then
 			end
 			if (encounter == "Sha of Pride") then
 				if (buffName == "Mark of Arrogance" and event == "SPELL_AURA_APPLIED") then
